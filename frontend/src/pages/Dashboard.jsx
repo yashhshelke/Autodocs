@@ -1,65 +1,54 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
+import useMissions from '../hooks/useMissions'
+import useWebSocket from '../hooks/useWebSocket'
+import Modal from '../components/ui/Modal'
+import LoadingSpinner from '../components/ui/LoadingSpinner'
 import './Dashboard.css'
 
 const Dashboard = () => {
     const navigate = useNavigate()
-    const [missions, setMissions] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
+    const { user, logout } = useAuth()
+    const toast = useToast()
+    const { missions, loading, fetchMissions } = useMissions(true)
     const [showNewMissionModal, setShowNewMissionModal] = useState(false)
+    const [filter, setFilter] = useState('all')
 
-    useEffect(() => {
-        // Simulate loading missions
-        setTimeout(() => {
-            setMissions([
-                {
-                    id: 1,
-                    title: 'College Transcript Request',
-                    type: 'Education',
-                    status: 'in-progress',
-                    progress: 65,
-                    lastAction: 'Agent verified ID at 2:00 PM',
-                    lastActionTime: '2 hours ago',
-                    estimatedCompletion: '1 hour',
-                    priority: 'high'
-                },
-                {
-                    id: 2,
-                    title: 'Government ID Renewal',
-                    type: 'Government',
-                    status: 'in-progress',
-                    progress: 40,
-                    lastAction: 'Filling form section 3 of 5',
-                    lastActionTime: '30 minutes ago',
-                    estimatedCompletion: '3 hours',
-                    priority: 'medium'
-                },
-                {
-                    id: 3,
-                    title: 'Tax Document Retrieval',
-                    type: 'Finance',
-                    status: 'completed',
-                    progress: 100,
-                    lastAction: 'Documents downloaded successfully',
-                    lastActionTime: '1 day ago',
-                    estimatedCompletion: 'Completed',
-                    priority: 'low'
-                },
-                {
-                    id: 4,
-                    title: 'Medical Records Request',
-                    type: 'Healthcare',
-                    status: 'pending',
-                    progress: 10,
-                    lastAction: 'Waiting for portal authentication',
-                    lastActionTime: '5 minutes ago',
-                    estimatedCompletion: '2 hours',
-                    priority: 'high'
+    // WebSocket for real-time updates
+    const { isConnected, lastMessage } = useWebSocket(
+        `${import.meta.env.VITE_WS_URL}/missions/`,
+        {
+            enabled: true,
+            onMessage: (data) => {
+                if (data.type === 'mission_update') {
+                    // Refresh missions when updates come in
+                    fetchMissions()
+                    toast.info(`Mission "${data.mission?.title}" updated`)
                 }
-            ])
-            setIsLoading(false)
-        }, 1000)
-    }, [])
+            },
+            onOpen: () => {
+                console.log('WebSocket connected to mission updates')
+            },
+            onError: (error) => {
+                console.error('WebSocket error:', error)
+            }
+        }
+    )
+
+    const handleLogout = async () => {
+        await logout()
+        toast.success('Logged out successfully')
+        navigate('/')
+    }
+
+    const filteredMissions = missions.filter((mission) => {
+        if (filter === 'all') return true
+        if (filter === 'in-progress') return mission.status === 'in-progress'
+        if (filter === 'completed') return mission.status === 'completed'
+        return true
+    })
 
     const getStatusBadge = (status) => {
         const statusConfig = {
@@ -92,15 +81,23 @@ const Dashboard = () => {
                         <div className="header-brand">
                             <h1 className="brand-logo">AutoDocs</h1>
                             <span className="brand-tagline">AI Process Monitor</span>
+                            {isConnected && (
+                                <span className="ws-indicator" title="Real-time updates active">
+                                    🟢 Live
+                                </span>
+                            )}
                         </div>
 
                         <div className="header-actions">
+                            <span className="user-greeting">
+                                Welcome, {user?.full_name || user?.email || 'User'}
+                            </span>
                             <button className="btn btn-outline" onClick={() => navigate('/')}>
                                 Home
                             </button>
-                            <button className="btn btn-secondary">
-                                <span>👤</span>
-                                Profile
+                            <button className="btn btn-secondary" onClick={handleLogout}>
+                                <span>👋</span>
+                                Logout
                             </button>
                         </div>
                     </div>
@@ -179,23 +176,50 @@ const Dashboard = () => {
                         <div className="section-header-inline">
                             <h3>Active Missions</h3>
                             <div className="filter-buttons">
-                                <button className="filter-btn active">All</button>
-                                <button className="filter-btn">In Progress</button>
-                                <button className="filter-btn">Completed</button>
+                                <button
+                                    className={`filter-btn ${filter === 'all' ? 'active' : ''}`}
+                                    onClick={() => setFilter('all')}
+                                >
+                                    All
+                                </button>
+                                <button
+                                    className={`filter-btn ${filter === 'in-progress' ? 'active' : ''}`}
+                                    onClick={() => setFilter('in-progress')}
+                                >
+                                    In Progress
+                                </button>
+                                <button
+                                    className={`filter-btn ${filter === 'completed' ? 'active' : ''}`}
+                                    onClick={() => setFilter('completed')}
+                                >
+                                    Completed
+                                </button>
                             </div>
                         </div>
 
-                        {isLoading ? (
-                            <div className="missions-grid">
-                                {[1, 2, 3, 4].map((i) => (
-                                    <div key={i} className="mission-card">
-                                        <div className="skeleton skeleton-card"></div>
-                                    </div>
-                                ))}
+                        {loading ? (
+                            <div className="loading-center">
+                                <LoadingSpinner size="large" text="Loading missions..." />
+                            </div>
+                        ) : filteredMissions.length === 0 ? (
+                            <div className="empty-state">
+                                <div className="empty-icon">📋</div>
+                                <h3>No missions found</h3>
+                                <p>
+                                    {filter === 'all'
+                                        ? 'Start a new process to get started'
+                                        : `No ${filter.replace('-', ' ')} missions`}
+                                </p>
+                                <button
+                                    className="btn btn-primary"
+                                    onClick={() => setShowNewMissionModal(true)}
+                                >
+                                    Start New Process
+                                </button>
                             </div>
                         ) : (
                             <div className="missions-grid">
-                                {missions.map((mission) => (
+                                {filteredMissions.map((mission) => (
                                     <div
                                         key={mission.id}
                                         className="mission-card"
@@ -249,44 +273,33 @@ const Dashboard = () => {
             </main>
 
             {/* New Mission Modal */}
-            {showNewMissionModal && (
-                <div className="modal-overlay" onClick={() => setShowNewMissionModal(false)}>
-                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="modal-header">
-                            <h3>Start New Process</h3>
-                            <button
-                                className="modal-close"
-                                onClick={() => setShowNewMissionModal(false)}
-                            >
-                                ✕
-                            </button>
-                        </div>
+            <Modal
+                isOpen={showNewMissionModal}
+                onClose={() => setShowNewMissionModal(false)}
+                title="Start New Process"
+                size="medium"
+            >
+                <p>Select the type of document or process you need:</p>
 
-                        <div className="modal-body">
-                            <p>Select the type of document or process you need:</p>
-
-                            <div className="process-types-grid">
-                                <button className="process-type-card">
-                                    <span className="process-icon">🎓</span>
-                                    <span className="process-name">Education</span>
-                                </button>
-                                <button className="process-type-card">
-                                    <span className="process-icon">🏛️</span>
-                                    <span className="process-name">Government</span>
-                                </button>
-                                <button className="process-type-card">
-                                    <span className="process-icon">💼</span>
-                                    <span className="process-name">Finance</span>
-                                </button>
-                                <button className="process-type-card">
-                                    <span className="process-icon">🏥</span>
-                                    <span className="process-name">Healthcare</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                <div className="process-types-grid">
+                    <button className="process-type-card">
+                        <span className="process-icon">🎓</span>
+                        <span className="process-name">Education</span>
+                    </button>
+                    <button className="process-type-card">
+                        <span className="process-icon">🏛️</span>
+                        <span className="process-name">Government</span>
+                    </button>
+                    <button className="process-type-card">
+                        <span className="process-icon">💼</span>
+                        <span className="process-name">Finance</span>
+                    </button>
+                    <button className="process-type-card">
+                        <span className="process-icon">🏥</span>
+                        <span className="process-name">Healthcare</span>
+                    </button>
                 </div>
-            )}
+            </Modal>
         </div>
     )
 }

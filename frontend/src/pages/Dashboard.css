@@ -48,7 +48,59 @@
 .header-actions {
     display: flex;
     gap: var(--spacing-md);
+    align-items: center;
 }
+
+.user-greeting {
+    font-size: var(--font-size-sm);
+    color: var(--color-slate-400);
+    margin-right: var(--spacing-sm);
+}
+
+.ws-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    color: var(--color-success-light);
+    font-weight: var(--font-weight-semibold);
+    animation: pulse 2s ease-in-out infinite;
+}
+
+.loading-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: var(--spacing-4xl) var(--spacing-xl);
+    background: var(--color-navy-800);
+    border: 1px dashed var(--color-navy-600);
+    border-radius: var(--radius-xl);
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: var(--spacing-lg);
+    opacity: 0.5;
+}
+
+.empty-state h3 {
+    margin-bottom: var(--spacing-sm);
+}
+
+.empty-state p {
+    color: var(--color-slate-500);
+    margin-bottom: var(--spacing-xl);
+}
+
 
 /* Main Content */
 .dashboard-main {
