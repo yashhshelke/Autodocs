@@ -80,12 +80,15 @@ const AuthPage = () => {
                                     type="text"
                                     id="fullName"
                                     name="fullName"
-                                    className="input"
+                                    className={`input ${errors.fullName ? 'input-error' : ''}`}
                                     placeholder="John Doe"
                                     value={formData.fullName}
                                     onChange={handleInputChange}
                                     required={!isLogin}
                                 />
+                                {errors.fullName && (
+                                    <span className="error-message">{errors.fullName}</span>
+                                )}
                             </div>
                         )}
 
@@ -97,12 +100,15 @@ const AuthPage = () => {
                                 type="email"
                                 id="email"
                                 name="email"
-                                className="input"
+                                className={`input ${errors.email ? 'input-error' : ''}`}
                                 placeholder="you@example.com"
                                 value={formData.email}
                                 onChange={handleInputChange}
                                 required
                             />
+                            {errors.email && (
+                                <span className="error-message">{errors.email}</span>
+                            )}
                         </div>
 
                         <div className="form-group">
@@ -113,12 +119,15 @@ const AuthPage = () => {
                                 type="password"
                                 id="password"
                                 name="password"
-                                className="input"
+                                className={`input ${errors.password ? 'input-error' : ''}`}
                                 placeholder="••••••••"
                                 value={formData.password}
                                 onChange={handleInputChange}
                                 required
                             />
+                            {errors.password && (
+                                <span className="error-message">{errors.password}</span>
+                            )}
                         </div>
 
                         {!isLogin && (
@@ -130,12 +139,15 @@ const AuthPage = () => {
                                     type="password"
                                     id="confirmPassword"
                                     name="confirmPassword"
-                                    className="input"
+                                    className={`input ${errors.confirmPassword ? 'input-error' : ''}`}
                                     placeholder="••••••••"
                                     value={formData.confirmPassword}
                                     onChange={handleInputChange}
                                     required={!isLogin}
                                 />
+                                {errors.confirmPassword && (
+                                    <span className="error-message">{errors.confirmPassword}</span>
+                                )}
                             </div>
                         )}
 
