@@ -1,9 +1,14 @@
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import { useToast } from '../contexts/ToastContext'
 import './AuthPage.css'
 
 const AuthPage = () => {
     const navigate = useNavigate()
+    const location = useLocation()
+    const { login, register, isAuthenticated } = useAuth()
+    const toast = useToast()
     const [isLogin, setIsLogin] = useState(true)
     const [formData, setFormData] = useState({
         email: '',
@@ -12,23 +17,97 @@ const AuthPage = () => {
         fullName: ''
     })
     const [isLoading, setIsLoading] = useState(false)
+    const [errors, setErrors] = useState({})
+
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            const from = location.state?.from?.pathname || '/dashboard'
+            navigate(from, { replace: true })
+        }
+    }, [isAuthenticated, navigate, location])
 
     const handleInputChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         })
+        // Clear error for this field
+        if (errors[e.target.name]) {
+            setErrors({
+                ...errors,
+                [e.target.name]: ''
+            })
+        }
+    }
+
+    const validateForm = () => {
+        const newErrors = {}
+
+        if (!isLogin && !formData.fullName.trim()) {
+            newErrors.fullName = 'Full name is required'
+        }
+
+        if (!formData.email.trim()) {
+            newErrors.email = 'Email is required'
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = 'Email is invalid'
+        }
+
+        if (!formData.password) {
+            newErrors.password = 'Password is required'
+        } else if (formData.password.length < 8) {
+            newErrors.password = 'Password must be at least 8 characters'
+        }
+
+        if (!isLogin) {
+            if (!formData.confirmPassword) {
+                newErrors.confirmPassword = 'Please confirm your password'
+            } else if (formData.password !== formData.confirmPassword) {
+                newErrors.confirmPassword = 'Passwords do not match'
+            }
+        }
+
+        setErrors(newErrors)
+        return Object.keys(newErrors).length === 0
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        if (!validateForm()) {
+            return
+        }
+
         setIsLoading(true)
 
-        // Simulate API call
-        setTimeout(() => {
+        try {
+            let result
+            if (isLogin) {
+                result = await login({
+                    email: formData.email,
+                    password: formData.password
+                })
+            } else {
+                result = await register({
+                    email: formData.email,
+                    password: formData.password,
+                    full_name: formData.fullName
+                })
+            }
+
+            if (result.success) {
+                toast.success(`Welcome ${isLogin ? 'back' : 'to AutoDocs'}!`)
+                const from = location.state?.from?.pathname || '/dashboard'
+                navigate(from, { replace: true })
+            } else {
+                toast.error(result.error || 'Authentication failed')
+            }
+        } catch (error) {
+            toast.error('An unexpected error occurred')
+        } finally {
             setIsLoading(false)
-            navigate('/dashboard')
-        }, 1500)
+        }
     }
 
     return (
