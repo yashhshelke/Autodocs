@@ -37,7 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'users',
+    'projects',
+    'templates',
+    'documents',
+    'pipelines',
 ]
+AUTH_USER_MODEL = 'users.User'
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -49,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'a.urls'
+ROOT_URLCONF = 'autodocs.urls'
 
 TEMPLATES = [
     {
@@ -66,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'a.wsgi.application'
+WSGI_APPLICATION = 'autodocs.wsgi.application'
 
 
 # Database
