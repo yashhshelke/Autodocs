@@ -5,46 +5,10 @@
   box-sizing: border-box;
 }
 
-:root {
-  /* Deep Navy and Slate Palette */
-  --primary-navy: #0a1628;
-  --secondary-navy: #1a2942;
-  --accent-blue: #3b82f6;
-  --accent-cyan: #06b6d4;
-  --slate-100: #f1f5f9;
-  --slate-200: #e2e8f0;
-  --slate-300: #cbd5e1;
-  --slate-600: #475569;
-  --slate-700: #334155;
-  --slate-800: #1e293b;
-  --slate-900: #0f172a;
-
-  /* Additional Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --white: #ffffff;
-  --text-primary: #f8fafc;
-  --text-secondary: #cbd5e1;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.4);
-
-  /* Transitions */
-  --transition-fast: 150ms ease-in-out;
-  --transition-normal: 300ms ease-in-out;
-  --transition-slow: 500ms ease-in-out;
-}
-
 html,
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: linear-gradient(135deg, var(--primary-navy) 0%, var(--slate-900) 100%);
-  color: var(--text-primary);
+  color: #f8fafc;
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
@@ -54,244 +18,27 @@ body {
   min-height: 100vh;
 }
 
-/* ==================== TYPOGRAPHY ==================== */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-}
-
-h1 {
-  font-size: 3rem;
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-h2 {
-  font-size: 2rem;
-  color: var(--text-primary);
-}
-
-h3 {
-  font-size: 1.5rem;
-  color: var(--text-primary);
-}
-
-p {
-  color: var(--text-secondary);
-  font-size: 1rem;
-}
-
 /* ==================== BUTTONS ==================== */
-button {
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-weight: 600;
-  transition: all var(--transition-normal);
-  outline: none;
-}
-
 .primary-btn {
-  background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
-  color: var(--white);
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  color: #ffffff;
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
   font-size: 1rem;
-  box-shadow: var(--shadow-lg);
-  position: relative;
-  overflow: hidden;
-}
-
-.primary-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left var(--transition-slow);
-}
-
-.primary-btn:hover::before {
-  left: 100%;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+  transition: all 300ms ease-in-out;
 }
 
 .primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
 }
 
 .primary-btn:active {
   transform: translateY(0);
-}
-
-.secondary-btn {
-  background: var(--secondary-navy);
-  color: var(--text-primary);
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  border: 1px solid var(--slate-700);
-}
-
-.secondary-btn:hover {
-  background: var(--slate-800);
-  border-color: var(--accent-blue);
-}
-
-/* ==================== INPUTS ==================== */
-input,
-textarea {
-  width: 100%;
-  padding: 0.875rem 1.25rem;
-  background: var(--secondary-navy);
-  border: 2px solid var(--slate-700);
-  border-radius: 0.75rem;
-  color: var(--text-primary);
-  font-family: inherit;
-  font-size: 1rem;
-  transition: all var(--transition-normal);
-  outline: none;
-}
-
-input::placeholder {
-  color: var(--slate-600);
-}
-
-input:focus,
-textarea:focus {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-/* ==================== CARDS ==================== */
-.card {
-  background: var(--secondary-navy);
-  border-radius: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--slate-700);
-  box-shadow: var(--shadow-md);
-  transition: all var(--transition-normal);
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow-xl);
-  border-color: var(--accent-blue);
-}
-
-/* ==================== GLASSMORPHISM UTILITY ==================== */
-.glass {
-  background: rgba(26, 41, 66, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* ==================== ANIMATIONS ==================== */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideInLeft {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.fade-in {
-  animation: fadeIn 0.6s ease-out forwards;
-}
-
-.slide-in-left {
-  animation: slideInLeft 0.6s ease-out forwards;
-}
-
-/* ==================== UTILITIES ==================== */
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 2rem;
-}
-
-.flex {
-  display: flex;
-}
-
-.flex-center {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.text-center {
-  text-align: center;
-}
-
-.mt-1 {
-  margin-top: 0.5rem;
-}
-
-.mt-2 {
-  margin-top: 1rem;
-}
-
-.mt-3 {
-  margin-top: 1.5rem;
-}
-
-.mt-4 {
-  margin-top: 2rem;
-}
-
-.mb-1 {
-  margin-bottom: 0.5rem;
-}
-
-.mb-2 {
-  margin-bottom: 1rem;
-}
-
-.mb-3 {
-  margin-bottom: 1.5rem;
-}
-
-.mb-4 {
-  margin-bottom: 2rem;
 }
 
 /* ==================== SCROLLBAR ==================== */
@@ -300,14 +47,19 @@ textarea:focus {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--primary-navy);
+  background: #0a1628;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--slate-700);
+  background: #334155;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-blue);
+  background: #3b82f6;
+}
+
+/* ==================== APP ROOT ==================== */
+.app-root {
+  min-height: 100vh;
 }

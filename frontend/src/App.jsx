@@ -1,30 +1,29 @@
+import React from "react";
 import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Dashboard from "./pages/Dashboard";
+import { AuthProvider } from "./context/AuthContext.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import Home from "./pages/Home.jsx";
+import Login from "./pages/Login.jsx";
+import Dashboard from "./pages/Dashboard.jsx";
 
 function App() {
     return (
-        <>
-            {/* Simple test to ensure React is rendering */}
-            <div style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                background: 'red',
-                color: 'white',
-                padding: '10px',
-                zIndex: 9999
-            }}>
-                React is working! ✓
+        <AuthProvider>
+            <div className="app-root">
+                <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route
+                        path="/dashboard"
+                        element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        }
+                    />
+                </Routes>
             </div>
-
-            <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-            </Routes>
-        </>
+        </AuthProvider>
     );
 }
 
