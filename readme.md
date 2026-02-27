@@ -1,1 +1,1 @@
-autodocx
+autodocs
